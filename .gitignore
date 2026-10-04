@@ -1,0 +1,17 @@
+# Build output
+build/
+
+# Object files
+*.o
+
+# Binaries
+ghostwasp-agent
+ghostwasp-controller
+
+# Debug files
+*.log
+
+# IDE/editor
+.vscode/
+.idea/
+*.swp
