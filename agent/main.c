@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include "../include/gw_protocol.h"
 
 int main(void)
 {
@@ -16,12 +17,12 @@ int main(void)
 	if (connect(fd, (struct sockaddr *)&srv, sizeof srv) < 0) { perror("connect"); close(fd); return 1;
  }
 	printf("Connected to Ghostwasp controller!\n");
+	struct gw_message message = { .type = GW_MSG_HELLO, .length = 5, .payload = "HELLO" };
 
-	const char *message = "HELLO";
 
-	if (send(fd, message, 5, 0) < 0) { perror("send"); close(fd); return 1; }
+	if (send(fd, &message, sizeof message, 0) < 0) { perror("send"); close(fd); return 1; }
 
-	printf("sent: %s\n", message);
+	printf("Sent Hello\n");
 
 	close(fd);
 

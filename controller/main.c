@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-
+#include "../include/gw_protocol.h"
 int main(void)
 {
 	int server = socket(AF_INET, SOCK_STREAM, 0);
@@ -25,13 +25,13 @@ int main(void)
 
 	printf("Agent connected!\n");
 
-	char buffer[1024] = {0};
+	struct gw_message message = {0};
 
-	ssize_t n = recv(agent, buffer, sizeof buffer - 1, 0);
+	ssize_t n = recv(agent, &message, sizeof message, 0);
 
 	if (n < 0) { perror("recv"); close(agent); close(server); return 1; }
 
-	printf("Recieved: %s\n", buffer);
+	if (message.type == GW_MSG_HELLO) { printf("Recieved HELLO from agent\n"); }
 
 	close(agent);
 	close(server);
