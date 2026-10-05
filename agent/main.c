@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdint.h>
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -21,7 +22,11 @@ int main(void)
 	struct gw_message message = { .type = GW_MSG_HELLO, .length = 5, .payload = "HELLO" };
 
 
-	if (gw_send_all(fd, &message, sizeof message) != sizeof message) { perror("send"); close(fd); return 1; }
+	uint8_t buffer[67];
+
+	int length = gw_message_encode(&message, buffer); 
+
+	if (gw_send_all(fd, buffer, length) != length) { perror("send"); close(fd); return 1; }
 
 	printf("Sent Hello\n");
 
