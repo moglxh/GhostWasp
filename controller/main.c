@@ -3,6 +3,8 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include "../include/gw_protocol.h"
+#include "../include/gw_net.h"
+
 int main(void)
 {
 	int server = socket(AF_INET, SOCK_STREAM, 0);
@@ -27,7 +29,7 @@ int main(void)
 
 	struct gw_message message = {0};
 
-	ssize_t n = recv(agent, &message, sizeof message, 0);
+	ssize_t n = gw_recv_all(agent, &message, sizeof message);
 
 	if (n < 0) { perror("recv"); close(agent); close(server); return 1; }
 

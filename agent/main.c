@@ -3,6 +3,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include "../include/gw_protocol.h"
+#include "../include/gw_net.h"
 
 int main(void)
 {
@@ -20,7 +21,7 @@ int main(void)
 	struct gw_message message = { .type = GW_MSG_HELLO, .length = 5, .payload = "HELLO" };
 
 
-	if (send(fd, &message, sizeof message, 0) < 0) { perror("send"); close(fd); return 1; }
+	if (gw_send_all(fd, &message, sizeof message) != sizeof message) { perror("send"); close(fd); return 1; }
 
 	printf("Sent Hello\n");
 
