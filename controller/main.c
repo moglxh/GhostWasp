@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdint.h>
+#include <string.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #include "../include/gw_protocol.h"
@@ -28,15 +29,29 @@ int main(void)
 
 	printf("Agent connected!\n");
 
-	uint8_t buffer[67];
+	uint8_t header[3];
 
-	ssize_t n = gw_recv_all(agent, buffer, sizeof buffer);
+	ssize_t n = gw_recv_all(agent, header, sizeof header);
 	if (n < 0) { perror("recv"); close(agent); close(server); return 1; }
+
+	uint16_t payload_length;
+	memcpy(&payload_length, header + 1, sizeof payload_length);
+
+
+	uint8_t payload[GW_MAX_PAYLOAD];
+	ssize_t payload_recieved = gw_recv_all(agent, payload, payload_length);
+
 
 	struct gw_message message = {0};
 
-	if (gw_message_decode(buffer, n, &message) < 0) { fprintf(stderr, "Failed to decode message\n"); close(agent); close(server); return 1; }
-	if (message.type == GW_MSG_HELLO) { printf("Recieved HELLO from agent\n"); }
+	message.type = header[0];
+	message.length = payload_length;
+
+	memcpy(message.payload, payload, payload_length);
+
+	if (message.type == GW_MSG_HELLO) {
+    printf("Recieved HELLO from agent\n");
+}
 
 	close(agent);
 	close(server);
